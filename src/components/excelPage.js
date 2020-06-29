@@ -2,6 +2,10 @@ import React, { Component } from "react";
 import { Table, Button, Popconfirm, Row, Col, Icon, Upload } from "antd";
 import { ExcelRenderer } from "react-excel-renderer";
 import { EditableFormRow, EditableCell } from "../utils/editable";
+import excel_sample from '../excel/Excel_Ejemplo.xlsx'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import '../styles/main.scss'
 
 export default class ExcelPage extends Component {
   constructor(props) {
@@ -9,30 +13,63 @@ export default class ExcelPage extends Component {
     this.state = {
       cols: [],
       rows: [],
+      count: 0,
+      addExcel: false,
+      addRow: false,
       errorMessage: null,
+      errorFlash: [],
+      columnsTypes: {
+        "name": "string",
+        "age":"number",
+        "gender":"string",
+        "score":"number",
+        "institute":"string"
+      },
+      columnsTrans:{
+        "name": "Nombre",
+        "age":"Edad",
+        "gender":"Género",
+        "score":"Puntaje",
+        "institute":"Instituto"
+      },
       columns: [
         {
-          title: "test",
+          title: "ID",
+          dataIndex: "key",
+          editable: false
+        },
+        {
+          title: "Nombre",
           dataIndex: "name",
           editable: true
         },
         {
-          title: "AGE",
+          title: "Edad",
           dataIndex: "age",
           editable: true
         },
         {
-          title: "GENDER",
+          title: "Género",
           dataIndex: "gender",
           editable: true
         },
         {
-          title: "Action",
+          title: "Puntaje",
+          dataIndex: "score",
+          editable: true
+        },
+        {
+          title: "Instituto",
+          dataIndex: "institute",
+          editable: true
+        },
+        {
+          title: "Acciones",
           dataIndex: "action",
           render: (text, record) =>
             this.state.rows.length >= 1 ? (
               <Popconfirm
-                title="Sure to delete?"
+                title="¿Estás seguro de eliminarlo?"
                 onConfirm={() => this.handleDelete(record.key)}
               >
                 <Icon
@@ -56,9 +93,11 @@ export default class ExcelPage extends Component {
       ...row
     });
     this.setState({ rows: newData });
+    this.setState({ errorFlash: [] })
   };
 
   checkFile(file) {
+    this.setState({ errorFlash: [] })
     let errorMessage = "";
     if (!file || !file[0]) {
       return;
@@ -68,23 +107,25 @@ export default class ExcelPage extends Component {
       file[0].type ===
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
     if (!isExcel) {
-      errorMessage = "You can only upload Excel file!";
+      errorMessage = "Solo puedes subir archivos excel";
     }
     console.log("file", file[0].type);
     const isLt2M = file[0].size / 1024 / 1024 < 2;
     if (!isLt2M) {
-      errorMessage = "File must be smaller than 2MB!";
+      errorMessage = "El archivo tiene que ser menor a 2mb";
     }
     console.log("errorMessage", errorMessage);
     return errorMessage;
   }
 
   fileHandler = fileList => {
+    this.setState({ errorFlash: [] })
     console.log("fileList", fileList);
     let fileObj = fileList;
+    this.setState({ addExcel: true, addRow: true })
     if (!fileObj) {
       this.setState({
-        errorMessage: "No file uploaded!"
+        errorMessage: "Ningú archivo fue subido"
       });
       return false;
     }
@@ -97,7 +138,7 @@ export default class ExcelPage extends Component {
       )
     ) {
       this.setState({
-        errorMessage: "Unknown file format. Only Excel files are uploaded!"
+        errorMessage: "Formato desconocido. Solo se permite archivos excel."
       });
       return false;
     }
@@ -119,7 +160,7 @@ export default class ExcelPage extends Component {
         });
         if (newRows.length === 0) {
           this.setState({
-            errorMessage: "No data found in file!"
+            errorMessage: "No hay datos en el archivo"
           });
           return false;
         } else {
@@ -134,8 +175,38 @@ export default class ExcelPage extends Component {
     return false;
   };
 
-  handleSubmit = async () => {
-    console.log("submitting: ", this.state.rows);
+  
+  handleSubmit = () => {
+    let data = this.state.rows
+    let types = this.state.columnsTypes
+    let trans = this.state.columnsTrans
+    let messages = []
+    data.forEach( (row) => {
+      for(var key in row) {
+        if(key==='key' || key==='prediction'){
+          continue
+        }
+        if(Object.keys(row).length - 1 <= Object.keys(types).length){
+          messages.push('El registro ' + row['key'] + ' necesita tener todos los valores')
+          break
+        }
+        if(typeof(row[key])!==types[key]){
+          if(types[key] == 'string' && isNaN(String(row[key]))){
+            messages.push('El registro ' + row['key'] + ' necesita un tipo texto en ' + trans[key] )
+            break
+          }
+          if(types[key] == 'number' && isNaN(Number(row[key]))){
+            messages.push('El registro ' + row['key'] + ' necesita un tipo número en ' + trans[key] )
+            break
+          }
+        }
+      }
+    });
+    if(messages.length > 0){
+      this.setState({ errorFlash: messages})
+    } else {
+      console.log("aun falta")
+    }
     //submit to API
     //if successful, banigate and clear the data
     //this.setState({ rows: [] })
@@ -144,19 +215,35 @@ export default class ExcelPage extends Component {
   handleDelete = key => {
     const rows = [...this.state.rows];
     this.setState({ rows: rows.filter(item => item.key !== key) });
+    if(this.state.rows.length == 1) {
+      this.setState({ addRow: false, addExcel: false });
+    }
+    this.setState({ errorFlash: [] })
   };
+
+  handleDeleteAll = key => {
+    const rows = [...this.state.rows];
+    this.setState({ rows: [], addExcel: false, addRow:false });
+    this.setState({ errorFlash: [] })
+  };
+
   handleAdd = () => {
     const { count, rows } = this.state;
     const newData = {
-      key: count,
-      name: "User's name",
-      age: "22",
-      gender: "Female"
+      key: this.state.count,
+      name: "Nombre del Alumno",
+      age: 0,
+      gender: "Hombre / Mujer",
+      score: 0,
+      institute: 'Nombre Instituto',
+      prediction: Math.floor(Math.random() * 2)
     };
     this.setState({
+      addRow: true,
       rows: [newData, ...rows],
-      count: count + 1
+      count: this.state.count + 1
     });
+    this.setState({ errorFlash: [] })
   };
 
   render() {
@@ -181,71 +268,153 @@ export default class ExcelPage extends Component {
         })
       };
     });
+    const notify =  (messages) => {
+      messages.forEach((element) =>{
+        toast.error(element, {
+          position: "top-right",
+          autoClose: 10000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: 1,
+          })
+      })
+    }
     return (
       <>
-        <h1>Importing Excel Component</h1>
-        <Row gutter={16}>
-          <Col
-            span={8}
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: "5%"
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center" }}>
-              <div className="page-title">Upload Farmer Data</div>
-            </div>
-          </Col>
-          <Col
-            span={8}
-            align="right"
-            style={{ display: "flex", justifyContent: "space-between" }}
-          >
-            {this.state.rows.length >= 0 && (
-              <>
+        {(this.state.errorFlash.length > 0) && (
+          <ToastContainer
+          position="top-right"
+          autoClose={10000}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          onLoad={notify(this.state.errorFlash)} />
+        )}
+        <header>
+          <h1>Analytics 11 Predicción de Ingreso a la Educación Superior</h1>
+        </header>
+        <Row gutter={5} style={{ marginTop: 30, marginLeft: 65, marginRight: 40}} justify='space-between' align='middle'>
+          <Col span={16}>
+            {!this.state.addExcel && (
+              <Button
+                className='primary'
+                onClick={this.handleAdd}
+                size="large"
+                type="primary">
+                <Icon type="plus" />
+                Agregar registro
+              </Button>
+            )}
+            {!this.state.addRow && (
+              <Upload
+                fileList=''
+                name="file"
+                beforeUpload={this.fileHandler}
+                onRemove={() => this.setState({ rows: [], addExcel: false })}
+                multiple={false}>
                 <Button
-                  onClick={this.handleAdd}
+                  className='sucess'
                   size="large"
-                  type="info"
-                  style={{ marginBottom: 16 }}
-                >
-                  <Icon type="plus" />
-                  Add a row
-                </Button>{" "}
-                <Button
-                  onClick={this.handleSubmit}
-                  size="large"
-                  type="primary"
-                  style={{ marginBottom: 16, marginLeft: 10 }}
-                >
-                  Submit Data
+                  type="none"
+                  style={{ marginLeft: 6}}>
+                  <Icon type="upload" /> Cargar Excel
                 </Button>
-              </>
+              </Upload>
             )}
           </Col>
-        </Row>
-        <div>
-          <Upload
-            name="file"
-            beforeUpload={this.fileHandler}
-            onRemove={() => this.setState({ rows: [] })}
-            multiple={false}
-          >
-            <Button>
-              <Icon type="upload" /> Click to Upload Excel File
+          <Col span={8} justify="end">
+            {(this.state.addRow || this.state.addExcel) && (
+              <Button
+                onClick={this.handleDeleteAll}
+                className='warning'
+                size="large"
+                type="none">
+                <Icon type="undo" /> Reiniciar Todo
+              </Button>
+            )}
+            <Button
+              className='sucess'
+              size="large"
+              type="none"
+              style={{ marginLeft: 10 }} >
+                <a
+                  href={excel_sample}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  download>
+                  <Icon type="download" /> Excel de Ejemplo
+                </a>
             </Button>
-          </Upload>
-        </div>
-        <div style={{ marginTop: 20 }}>
+            <Button
+              className='primary'
+              onClick={this.handleSubmit}
+              size="large"
+              type="none"
+              style={{ marginLeft: 10 }}
+            >
+              <Icon type="upload" /> Ejecutar Predicción
+            </Button>
+          </Col>
+        </Row>
+
+        <Row style={{ marginTop: 30, textAlign: 'center'}} justify='space-between' >
+          <Col span={8}>
+            <Button
+              className='primary'
+              onClick={this.handleSubmit}
+              size="large"
+              type="none"
+              block="True"
+            >
+              Tabla
+            </Button>
+            
+          </Col>
+          <Col span={8}>
+            <Button
+              className='primary'
+              onClick={this.handleSubmit}
+              size="large"
+              type="none"
+              block="True"
+            >
+              Gráficos
+            </Button>
+          </Col>
+          <Col span={8}>
+            <Button
+              className='primary'
+              onClick={this.handleSubmit}
+              size="large"
+              type="none"
+              block="True"
+            >
+              Estadśticas
+            </Button>
+          </Col>  
+        </Row>
+
+        <div style={{ marginTop: 0 , marginLeft: 0, marginRight: 0}}>
           <Table
+            locale={{ emptyText: 'Sin Datos' }}
+            className="table-striped-rows"
             components={components}
             rowClassName={() => "editable-row"}
             dataSource={this.state.rows}
             columns={columns}
+            size="small"
+            bordered
           />
         </div>
+        <footer>
+        test
+      </footer>
       </>
     );
   }
