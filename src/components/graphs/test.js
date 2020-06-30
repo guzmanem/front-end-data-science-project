@@ -4,39 +4,47 @@
 
 // const Test = () =>{
 //   let TemperatureData = [ 8, 5, 13, 9, 12 ]
-//   d3.select(this.refs.temperatures)
+//   d3.select('#graph')
 //       .selectAll("h2")
 //       .data(TemperatureData)
 //       .enter()
-//           .append("h2")
-//           .text("New Temperature")
+//         .append("h2")
 
-//   render(<div ref="temperatures"></div>)
+
+//     return null;
 // }
 // export default Test
-
-// import rd3 from 'react-d3-library';
-// import node from 'd3file';
-// const RD3Component = rd3.Component;
-
-// class Test extends React.Component {
-
-//   constructor(props) {
-//     super(props);
-//     this.state = {d3: ''}
-//   }
-
-//   componentDidMount() {
-//     this.setState({d3: node});
-//   }
-
-//   render() {
-//     return (
-//       <div>
-//         <RD3Component data={this.state.d3} />
-//       </div>
-//     )
-//   }
-// };
-
-// export default Test
+import React, { Component } from 'react'
+import * as d3 from 'd3'
+class Test extends Component {
+    componentDidMount() {
+        const data = [ 2, 4, 2, 6, 8 ]
+        this.drawBarChart(data)
+    }
+    drawBarChart(data) {
+      const canvasHeight = 400
+      const canvasWidth = 600
+      const scale = 20
+      const svgCanvas = d3.select(this.refs.canvas)
+          .append("svg")
+          .attr("width", canvasWidth)
+          .attr("height", canvasHeight)
+          .style("border", "1px solid black")
+      svgCanvas.selectAll("rect")
+          .data(data).enter()
+              .append("rect")
+              .attr("width", 40)
+              .attr("height", (datapoint) => datapoint * scale)
+              .attr("fill", "orange")
+              .attr("x", (datapoint, iteration) => iteration * 45)
+              .attr("y", (datapoint) => canvasHeight - datapoint * scale)
+      svgCanvas.selectAll("text")
+        .data(data).enter()
+            .append("text")
+            .attr("x", (dataPoint, i) => i * 45 + 10)
+            .attr("y", (dataPoint, i) => canvasHeight - dataPoint * scale - 10)
+            .text(dataPoint => dataPoint)
+    }
+    render() { return <div id="canvas" ref="canvas"></div> }
+}
+export default Test

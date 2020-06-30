@@ -441,7 +441,7 @@ export default class ExcelPage extends Component {
 
         {(this.state.viewGraph) && (
           <div style={{ marginTop: 0 , marginLeft: 0, marginRight: 0}}>
-            {/* <Test></Test> */}
+            <Test></Test>
           </div>
         )}
 
