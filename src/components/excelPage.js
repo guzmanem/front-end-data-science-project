@@ -1,3 +1,7 @@
+import herokuIcon from '../icons/heroku.svg'
+import reactIcon from '../icons/react.svg'
+import netlifyIcon from '../icons/netlify.svg'
+import flaskIcon from '../icons/flask.png'
 import React, { Component } from "react";
 import { Table, Button, Popconfirm, Row, Col, Icon, Upload } from "antd";
 import { ExcelRenderer } from "react-excel-renderer";
@@ -6,6 +10,7 @@ import excel_sample from '../excel/Excel_Ejemplo.xlsx'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import '../styles/main.scss'
+import Test from './graphs/test'
 
 export default class ExcelPage extends Component {
   constructor(props) {
@@ -16,6 +21,9 @@ export default class ExcelPage extends Component {
       count: 0,
       addExcel: false,
       addRow: false,
+      viewTable: true,
+      viewGraph: false,
+      viewStat: false,
       errorMessage: null,
       errorFlash: [],
       columnsTypes: {
@@ -177,10 +185,12 @@ export default class ExcelPage extends Component {
 
   
   handleSubmit = () => {
+    this.setState({ errorFlash: [] })
     let data = this.state.rows
     let types = this.state.columnsTypes
     let trans = this.state.columnsTrans
     let messages = []
+    debugger
     data.forEach( (row) => {
       for(var key in row) {
         if(key==='key' || key==='prediction'){
@@ -226,6 +236,18 @@ export default class ExcelPage extends Component {
     this.setState({ rows: [], addExcel: false, addRow:false });
     this.setState({ errorFlash: [] })
   };
+
+  setTable = () => {
+    this.setState({ viewTable: true, viewGraph: false, viewStat: false })
+  }
+
+  setGraph = () => {
+    this.setState({ viewTable: false, viewGraph: true, viewStat: false })
+  }
+
+  setStat = () => {
+    this.setState({ viewTable: false, viewGraph: false, viewStat: true })
+  }
 
   handleAdd = () => {
     const { count, rows } = this.state;
@@ -297,8 +319,9 @@ export default class ExcelPage extends Component {
           onLoad={notify(this.state.errorFlash)} />
         )}
         <header>
-          <h1>Analytics 11 Predicción de Ingreso a la Educación Superior</h1>
+          <h1>Ingreso a la Educación Superior</h1>
         </header>
+        <body>
         <Row gutter={5} style={{ marginTop: 30, marginLeft: 65, marginRight: 40}} justify='space-between' align='middle'>
           <Col span={16}>
             {!this.state.addExcel && (
@@ -366,11 +389,11 @@ export default class ExcelPage extends Component {
         <Row style={{ marginTop: 30, textAlign: 'center'}} justify='space-between' >
           <Col span={8}>
             <Button
-              className='primary'
-              onClick={this.handleSubmit}
+              className='menu'
               size="large"
               type="none"
               block="True"
+              onClick={this.setTable}
             >
               Tabla
             </Button>
@@ -378,43 +401,72 @@ export default class ExcelPage extends Component {
           </Col>
           <Col span={8}>
             <Button
-              className='primary'
-              onClick={this.handleSubmit}
+              className='menu'
               size="large"
               type="none"
               block="True"
+              onClick={this.setGraph}
             >
               Gráficos
             </Button>
           </Col>
           <Col span={8}>
             <Button
-              className='primary'
-              onClick={this.handleSubmit}
+              className='menu'
               size="large"
               type="none"
               block="True"
+              onClick={this.setStat}
             >
-              Estadśticas
+              Estadísticas
             </Button>
           </Col>  
         </Row>
 
-        <div style={{ marginTop: 0 , marginLeft: 0, marginRight: 0}}>
-          <Table
-            locale={{ emptyText: 'Sin Datos' }}
-            className="table-striped-rows"
-            components={components}
-            rowClassName={() => "editable-row"}
-            dataSource={this.state.rows}
-            columns={columns}
-            size="small"
-            bordered
-          />
-        </div>
+
+        {(this.state.viewTable) && (
+          <div style={{ marginTop: 0 , marginLeft: 0, marginRight: 0}}>
+            <Table
+              locale={{ emptyText: 'Sin Datos' }}
+              className="table-striped-rows"
+              components={components}
+              rowClassName={() => "editable-row"}
+              dataSource={this.state.rows}
+              columns={columns}
+              size="small"
+              bordered
+            />
+          </div>
+        )}
+
+        {(this.state.viewGraph) && (
+          <div style={{ marginTop: 0 , marginLeft: 0, marginRight: 0}}>
+            {/* <Test></Test> */}
+          </div>
+        )}
+
+        {(this.state.viewStat> 0) && (
+          <div style={{ marginTop: 0 , marginLeft: 0, marginRight: 0}}>
+            test2
+          </div>
+        )}
+
+
+        </body>
         <footer>
-        test
-      </footer>
+          <Col span={12} className='container'>
+            <h3>Analytics 11 <span>&#169;</span></h3>
+          </Col>
+          <Col span={12} className='container'>
+              <h3>
+                Tecnologías Utilizadas &nbsp;
+                <img src={herokuIcon} style={{ height: '17.5px', width: '17.5px' }}/> &nbsp;
+                <img src={reactIcon} style={{ height: '17.5px', width: '17.5px' }}/> &nbsp;
+                <img src={netlifyIcon} style={{ height: '17.5px', width: '17.5px' }}/> &nbsp;
+                <img src={flaskIcon} style={{ height: '17.5px', width: '17.5px' }}/> 
+              </h3>
+          </Col>
+        </footer>
       </>
     );
   }
