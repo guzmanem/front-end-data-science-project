@@ -10,7 +10,7 @@ import excel_sample from '../excel/Excel_Ejemplo.xlsx'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import '../styles/main.scss'
-import Test from './graphs/test'
+import Graph from './graphs/graph'
 
 export default class ExcelPage extends Component {
   constructor(props) {
@@ -18,12 +18,14 @@ export default class ExcelPage extends Component {
     this.state = {
       cols: [],
       rows: [],
+      dataToGraph: [],
+      dataSubgroup: [],
+      typeDataToGraph: '',
       count: 0,
       addExcel: false,
       addRow: false,
       viewTable: true,
       viewGraph: false,
-      viewStat: false,
       errorMessage: null,
       errorFlash: [],
       columnsTypes: {
@@ -190,7 +192,6 @@ export default class ExcelPage extends Component {
     let types = this.state.columnsTypes
     let trans = this.state.columnsTrans
     let messages = []
-    debugger
     data.forEach( (row) => {
       for(var key in row) {
         if(key==='key' || key==='prediction'){
@@ -238,15 +239,18 @@ export default class ExcelPage extends Component {
   };
 
   setTable = () => {
-    this.setState({ viewTable: true, viewGraph: false, viewStat: false })
+    this.setState({ viewTable: true, viewGraph: false })
+    this.setState({ errorFlash: [] })
   }
 
   setGraph = () => {
-    this.setState({ viewTable: false, viewGraph: true, viewStat: false })
+    this.setState({ viewTable: false, viewGraph: true })
+    this.setState({ errorFlash: [] })
   }
 
   setStat = () => {
-    this.setState({ viewTable: false, viewGraph: false, viewStat: true })
+    this.setState({ viewTable: false, viewGraph: false })
+    this.setState({ errorFlash: [] })
   }
 
   handleAdd = () => {
@@ -267,6 +271,39 @@ export default class ExcelPage extends Component {
     });
     this.setState({ errorFlash: [] })
   };
+
+  dataGraph = (event) =>{
+    var type = this.state.columnsTypes[event.target.value]
+    if(type == 'number'){
+      var data = this.state.rows.map( (element) =>{
+        return {type: element.prediction, value: element[event.target.value] }
+      })
+      this.setState({ dataToGraph: data, typeDataToGraph: type})
+    } else { 
+      var dict = {}
+      this.state.rows.forEach( (element) =>{
+        if(dict[element[event.target.value]] !== undefined){
+          if(element.prediction == 1){
+            dict[element[event.target.value]]['Ingreso'] += 1
+          } else {
+            dict[element[event.target.value]]['NoIngreso'] += 1
+          }
+        } else{ 
+          if(element.prediction == 1){
+            dict[element[event.target.value]] = { group: element[event.target.value] , Ingreso: 1, NoIngreso: 0}
+          } else {
+            dict[element[event.target.value]] = { group: element[event.target.value] , Ingreso: 0, NoIngreso: 1}
+          }
+        }
+      })
+      data = []
+      const values = Object.values(dict)
+      for (const value of values){
+        data.push(value)
+      }
+      this.setState({ dataToGraph: data, typeDataToGraph: type, dataSubgroup: ["Ingreso", "NoIngreso"] })
+    }
+  }
 
   render() {
     const components = {
@@ -303,6 +340,27 @@ export default class ExcelPage extends Component {
           })
       })
     }
+
+    var columnsToGraph = (
+      this.state.columns.filter((element) =>{
+        if ((element.title === 'key') || (element.title ==='action')){
+          return false
+        } else {
+          return true
+        }
+      }
+    ))
+  
+    var listColumns= (
+      <div className='columnsList' onChange={this.dataGraph}>
+        {columnsToGraph.map( (element,index) => (
+          <div>
+            <input type="radio" value={element.dataIndex} name='columnsToGraph' />{element.title}
+          </div>
+        ))}
+      </div>
+    );
+  
     return (
       <>
         {(this.state.errorFlash.length > 0) && (
@@ -386,8 +444,39 @@ export default class ExcelPage extends Component {
           </Col>
         </Row>
 
-        <Row style={{ marginTop: 30, textAlign: 'center'}} justify='space-between' >
-          <Col span={8}>
+        {/* <Row style={{ marginTop: 30, textAlign: 'center'}} justify='space-between' > */}
+          <div className='row' style={{ marginTop: 30, textAlign: 'center', witdh:'100%'}}>
+          {/* <Col span={12}> */}
+            <div className='col-md-6 px-0'>
+              <Button
+                className='menu'
+                size="large"
+                type="none"
+                block="True"
+                onClick={this.setTable}
+              >
+                Tabla
+              </Button>
+            </div>
+          {/* </Col> */}
+          {/* <Col span={12}> */}
+            <div className='col-md-6 px-0'>
+              <Button
+                className='menu'
+                size="large"
+                type="none"
+                block="True"
+                onClick={this.setGraph}
+              >
+                Gráficos
+              </Button>
+            </div>
+          </div>
+          {/* </Col> */}
+        {/* </Row> */}
+
+        {/* <Row style={{ marginTop: 30, textAlign: 'center'}} justify='space-between' >
+          <Col span={12}>
             <Button
               className='menu'
               size="large"
@@ -399,7 +488,7 @@ export default class ExcelPage extends Component {
             </Button>
             
           </Col>
-          <Col span={8}>
+          <Col span={12}>
             <Button
               className='menu'
               size="large"
@@ -410,18 +499,7 @@ export default class ExcelPage extends Component {
               Gráficos
             </Button>
           </Col>
-          <Col span={8}>
-            <Button
-              className='menu'
-              size="large"
-              type="none"
-              block="True"
-              onClick={this.setStat}
-            >
-              Estadísticas
-            </Button>
-          </Col>  
-        </Row>
+        </Row> */}
 
 
         {(this.state.viewTable) && (
@@ -440,24 +518,19 @@ export default class ExcelPage extends Component {
         )}
 
         {(this.state.viewGraph) && (
+          
           <div style={{ marginTop: 0 , marginLeft: 0, marginRight: 0}}>
-            <Test></Test>
+            {listColumns}
+            <Graph data ={this.state.dataToGraph} type={this.state.typeDataToGraph} subgroups={this.state.dataSubgroup}></Graph>
           </div>
         )}
-
-        {(this.state.viewStat> 0) && (
-          <div style={{ marginTop: 0 , marginLeft: 0, marginRight: 0}}>
-            test2
-          </div>
-        )}
-
 
         </body>
         <footer>
-          <Col span={12} className='container'>
+          <Col span={12} className='containerFooter'>
             <h3>Analytics 11 <span>&#169;</span></h3>
           </Col>
-          <Col span={12} className='container'>
+          <Col span={12} className='containerFooter'>
               <h3>
                 Tecnologías Utilizadas &nbsp;
                 <img src={herokuIcon} style={{ height: '17.5px', width: '17.5px' }}/> &nbsp;
