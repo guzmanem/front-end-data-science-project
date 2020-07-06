@@ -10,7 +10,10 @@ import excel_sample from '../excel/Excel_Ejemplo.xlsx'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import '../styles/main.scss'
+import { CSVLink } from 'react-csv'
 import Graph from './graphs/graph'
+import axios from "axios";
+
 
 export default class ExcelPage extends Component {
   constructor(props) {
@@ -27,13 +30,25 @@ export default class ExcelPage extends Component {
       viewTable: true,
       viewGraph: false,
       errorMessage: null,
-      errorFlash: [],
+      errorFlash: [], successFlash: [],
+      successFlash: [],
       columnsTypes: {
         "name": "string",
-        "age":"number",
-        "gender":"string",
-        "score":"number",
-        "institute":"string"
+        "average_psu": "number",
+        "average_nem": "number",
+        "prom_notas_alu": "number",
+        "cod_pro_rbd": "number",
+        "cod_depe2": "number",
+        "rural_rbd": "number",
+        "cod_ense": "number",
+        "cod_jor": "number",
+        "cod_des_cur": "number",
+        "gen_alu": "number",
+        "edad_alu": "number",
+        "alums_pref": "number",
+        "alums_prior": "number",
+        "alumns_class": "number",
+        "prediction": 'number'
       },
       columnsTrans:{
         "name": "Nombre",
@@ -54,24 +69,74 @@ export default class ExcelPage extends Component {
           editable: true
         },
         {
-          title: "Edad",
-          dataIndex: "age",
+          title: "Promedio PSU",
+          dataIndex: "average_psu",
           editable: true
         },
         {
-          title: "Género",
-          dataIndex: "gender",
+          title: "Promedio NEM",
+          dataIndex: "average_nem",
           editable: true
         },
         {
-          title: "Puntaje",
-          dataIndex: "score",
+          title: "Promedio 4to Medio",
+          dataIndex: "prom_notas_alu",
           editable: true
         },
         {
           title: "Instituto",
-          dataIndex: "institute",
+          dataIndex: "cod_pro_rbd",
           editable: true
+        },
+        {
+          title: "Código Depedencia",
+          dataIndex: "cod_depe2",
+          editable: true
+        },
+        {
+          title: "Ruralidad",
+          dataIndex: "rural_rbd",
+          editable: true
+        },
+        {
+          title: "Código de Enseñanza",
+          dataIndex: "cod_ense",
+          editable: true
+        },
+        {
+          title: "Descipción del Curso",
+          dataIndex: "cod_des_cur",
+          editable: true
+        },
+        {
+          title: "Sexo",
+          dataIndex: "gen_alu",
+          editable: true
+        },
+        {
+          title: "Edad",
+          dataIndex: "edad_alu",
+          editable: true
+        },
+        {
+          title: "Alumnos Preferenciales (Aula)",
+          dataIndex: "alums_pref",
+          editable: true
+        },
+        {
+          title: "Alumnos Prioritarios (Aula)",
+          dataIndex: "alums_prior",
+          editable: true
+        },
+        {
+          title: "Alumnos (Aula)",
+          dataIndex: "alumns_class",
+          editable: true
+        },
+        {
+          title: "Ingreso",
+          dataIndex: "prediction",
+          editable: false
         },
         {
           title: "Acciones",
@@ -103,11 +168,11 @@ export default class ExcelPage extends Component {
       ...row
     });
     this.setState({ rows: newData });
-    this.setState({ errorFlash: [] })
+    this.setState({ errorFlash: [], successFlash: [] })
   };
 
   checkFile(file) {
-    this.setState({ errorFlash: [] })
+    this.setState({ errorFlash: [], successFlash: [] })
     let errorMessage = "";
     if (!file || !file[0]) {
       return;
@@ -129,7 +194,7 @@ export default class ExcelPage extends Component {
   }
 
   fileHandler = fileList => {
-    this.setState({ errorFlash: [] })
+    this.setState({ errorFlash: [], successFlash: [] })
     console.log("fileList", fileList);
     let fileObj = fileList;
     this.setState({ addExcel: true, addRow: true })
@@ -185,9 +250,8 @@ export default class ExcelPage extends Component {
     return false;
   };
 
-  
   handleSubmit = () => {
-    this.setState({ errorFlash: [] })
+    this.setState({ errorFlash: [], successFlash: [] })
     let data = this.state.rows
     let types = this.state.columnsTypes
     let trans = this.state.columnsTrans
@@ -197,7 +261,7 @@ export default class ExcelPage extends Component {
         if(key==='key' || key==='prediction'){
           continue
         }
-        if(Object.keys(row).length - 1 <= Object.keys(types).length){
+        if(Object.keys(row).length  <= Object.keys(types).length){
           messages.push('El registro ' + row['key'] + ' necesita tener todos los valores')
           break
         }
@@ -216,11 +280,23 @@ export default class ExcelPage extends Component {
     if(messages.length > 0){
       this.setState({ errorFlash: messages})
     } else {
-      console.log("aun falta")
+      var rows = this.state.rows
+      axios.post("https://api-data-science-project.herokuapp.com/api/v1/",{
+        header: {
+          "Access-Control-Allow-Origin": 'front-end'
+        },
+        body: rows})
+      .then(response => {
+        var new_data = this.state.rows.map((element, index)=>{
+          element['prediction'] = response["data"][index]
+          return element
+        })
+        this.setState({ rows: new_data, successFlash: ['Se cargaron las predicciones correctamente.'] })
+      })
+      .catch(err => {
+        this.setState({ errorFlash: ['Error inesperado obteniendo las predicciones.']})
+      });
     }
-    //submit to API
-    //if successful, banigate and clear the data
-    //this.setState({ rows: [] })
   };
 
   handleDelete = key => {
@@ -229,28 +305,28 @@ export default class ExcelPage extends Component {
     if(this.state.rows.length == 1) {
       this.setState({ addRow: false, addExcel: false });
     }
-    this.setState({ errorFlash: [] })
+    this.setState({ errorFlash: [], successFlash: [] })
   };
 
   handleDeleteAll = key => {
     const rows = [...this.state.rows];
     this.setState({ rows: [], addExcel: false, addRow:false });
-    this.setState({ errorFlash: [] })
+    this.setState({ errorFlash: [], successFlash: [] })
   };
 
   setTable = () => {
     this.setState({ viewTable: true, viewGraph: false })
-    this.setState({ errorFlash: [] })
+    this.setState({ errorFlash: [], successFlash: [] })
   }
 
   setGraph = () => {
     this.setState({ viewTable: false, viewGraph: true })
-    this.setState({ errorFlash: [] })
+    this.setState({ errorFlash: [], successFlash: [] })
   }
 
   setStat = () => {
     this.setState({ viewTable: false, viewGraph: false })
-    this.setState({ errorFlash: [] })
+    this.setState({ errorFlash: [], successFlash: [] })
   }
 
   handleAdd = () => {
@@ -258,18 +334,28 @@ export default class ExcelPage extends Component {
     const newData = {
       key: this.state.count,
       name: "Nombre del Alumno",
-      age: 0,
-      gender: "Hombre / Mujer",
-      score: 0,
-      institute: 'Nombre Instituto',
-      prediction: Math.floor(Math.random() * 2)
+      average_psu: 0,
+      average_nem: 0,
+      prom_notas_alu: 0,
+      cod_pro_rbd: 0,
+      cod_depe2: 0,
+      rural_rbd: 0,
+      cod_ense: 0,
+      cod_jor: 0,
+      cod_des_cur: 0,
+      gen_alu: 0,
+      edad_alu: 0,
+      alums_pref: 0,
+      alums_prior: 0,
+      alumns_class: 0,
+      prediction: ''
     };
     this.setState({
       addRow: true,
       rows: [newData, ...rows],
       count: this.state.count + 1
     });
-    this.setState({ errorFlash: [] })
+    this.setState({ errorFlash: [], successFlash: [] })
   };
 
   dataGraph = (event) =>{
@@ -327,18 +413,33 @@ export default class ExcelPage extends Component {
         })
       };
     });
-    const notify =  (messages) => {
-      messages.forEach((element) =>{
-        toast.error(element, {
-          position: "top-right",
-          autoClose: 10000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: 1,
-          })
-      })
+    const notify =  (messages, type) => {
+      if(type === 'error'){
+        messages.forEach((element) =>{
+          toast.error(element, {
+            position: "top-right",
+            autoClose: 10000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: 1,
+            })
+        })
+      }
+      if(type === 'success'){
+        messages.forEach((element) =>{
+          toast.success(element, {
+            position: "top-right",
+            autoClose: 10000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: 1,
+            })
+        })
+      }
     }
 
     var columnsToGraph = (
@@ -374,8 +475,23 @@ export default class ExcelPage extends Component {
           pauseOnFocusLoss
           draggable
           pauseOnHover
-          onLoad={notify(this.state.errorFlash)} />
+          onLoad={notify(this.state.errorFlash, 'error')} />
         )}
+
+        {(this.state.successFlash.length > 0) && (
+          <ToastContainer
+          position="top-right"
+          autoClose={10000}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          onLoad={notify(this.state.successFlash, 'success')} />
+        )}
+
         <header>
           <h1>Ingreso a la Educación Superior</h1>
         </header>
@@ -503,7 +619,7 @@ export default class ExcelPage extends Component {
 
 
         {(this.state.viewTable) && (
-          <div style={{ marginTop: 0 , marginLeft: 0, marginRight: 0}}>
+          <div style={{ marginTop: 0 , marginLeft: 0, marginRight: 0}} >
             <Table
               locale={{ emptyText: 'Sin Datos' }}
               className="table-striped-rows"
@@ -516,6 +632,17 @@ export default class ExcelPage extends Component {
             />
           </div>
         )}
+
+
+          <div className='col-md-1 offset-md-1'>
+            <Button className='export'
+                size="large"
+                type="none"
+                block="True" >
+              <CSVLink data={this.state.rows} filename='test.xlsx'>Exportar</CSVLink>
+            </Button>
+          </div>
+
 
         {(this.state.viewGraph) && (
           

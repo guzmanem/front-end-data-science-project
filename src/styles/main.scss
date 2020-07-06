@@ -123,6 +123,28 @@ footer {
   border: 0px solid #000000;
 }
 
+.export{
+  background-color: #248b3c;
+  color: rgb(255,255,255);
+  &:hover, &:focus  {
+    background-color: #1D6F42;
+    color: rgb(200,200,200);
+    border-color: #1D6F42;
+  }
+  -webkit-box-shadow: 5px 5px 5px 0px rgba(0,0,0,0.75);
+  -moz-box-shadow: 5px 5px 5px 0px rgba(0,0,0,0.75);
+  box-shadow: 5px 5px 5px 0px rgba(0,0,0,0.75);
+  border-radius: 25px 25px 25px 25px;
+  -moz-border-radius: 25px 25px 25px 25px;
+  -webkit-border-radius: 25px 25px 25px 25px;
+  border: 0px solid #000000;
+  // position: relative;
+  // top: 50%;
+  // left: 50%;
+  // transform: translate(-180%, -50%);
+  // width: 168.72px;
+}
+
 .menu{
   background-color: #d7dfd2;
   color: rgb(255,255,255);    
