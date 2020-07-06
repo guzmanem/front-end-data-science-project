@@ -104,7 +104,7 @@ export default class ExcelPage extends Component {
           editable: true
         },
         {
-          title: "Descipción del Curso",
+          title: "Descripción del Curso",
           dataIndex: "cod_des_cur",
           editable: true
         },
