@@ -61,86 +61,103 @@ export default class ExcelPage extends Component {
         {
           title: "ID",
           dataIndex: "key",
-          editable: false
+          editable: false,
+          width: 50
         },
         {
           title: "Nombre",
           dataIndex: "name",
-          editable: true
+          editable: true,
+          width: 100
         },
         {
-          title: "Promedio PSU",
+          title: "PSU",
           dataIndex: "average_psu",
-          editable: true
+          editable: true,
+          width: 100
         },
         {
-          title: "Promedio NEM",
+          title: "NEM",
           dataIndex: "average_nem",
-          editable: true
+          editable: true,
+          width: 100
         },
         {
-          title: "Promedio 4to Medio",
+          title: "4to Medio",
           dataIndex: "prom_notas_alu",
-          editable: true
+          editable: true,
+          width: 100
         },
         {
           title: "Instituto",
           dataIndex: "cod_pro_rbd",
-          editable: true
+          editable: true,
+          width: 100
         },
         {
-          title: "Código Depedencia",
+          title: "Dependencia",
           dataIndex: "cod_depe2",
-          editable: true
+          editable: true,
+          width: 100
         },
         {
           title: "Ruralidad",
           dataIndex: "rural_rbd",
-          editable: true
+          editable: true,
+          width: 100
         },
         {
-          title: "Código de Enseñanza",
+          title: "Enseñanza",
           dataIndex: "cod_ense",
-          editable: true
+          editable: true,
+          width: 100
         },
         {
-          title: "Descripción del Curso",
+          title: "Curso",
           dataIndex: "cod_des_cur",
-          editable: true
+          editable: true,
+          width: 100
         },
         {
           title: "Sexo",
           dataIndex: "gen_alu",
-          editable: true
+          editable: true,
+          width: 100
         },
         {
           title: "Edad",
           dataIndex: "edad_alu",
-          editable: true
+          editable: true,
+          width: 100
         },
         {
-          title: "Alumnos Preferenciales (Aula)",
+          title: "Preferenciales (Aula)",
           dataIndex: "alums_pref",
-          editable: true
+          editable: true,
+          width: 150
         },
         {
-          title: "Alumnos Prioritarios (Aula)",
+          title: "Prioritarios (Aula)",
           dataIndex: "alums_prior",
-          editable: true
+          editable: true,
+          width: 150
         },
         {
           title: "Alumnos (Aula)",
           dataIndex: "alumns_class",
-          editable: true
+          editable: true,
+          width: 150
         },
         {
           title: "Ingreso",
           dataIndex: "prediction",
-          editable: false
+          editable: false,
+          width: 100
         },
         {
           title: "Acciones",
           dataIndex: "action",
+          width: 100,
           render: (text, record) =>
             this.state.rows.length >= 1 ? (
               <Popconfirm
@@ -463,7 +480,7 @@ export default class ExcelPage extends Component {
     );
   
     return (
-      <>
+      <div style={{position: 'relative', minHeight: '100vh'}}>
         {(this.state.errorFlash.length > 0) && (
           <ToastContainer
           position="top-right"
@@ -491,169 +508,147 @@ export default class ExcelPage extends Component {
           pauseOnHover
           onLoad={notify(this.state.successFlash, 'success')} />
         )}
-
-        <header>
-          <h1>Ingreso a la Educación Superior</h1>
-        </header>
-        <body>
-        <Row gutter={5} style={{ marginTop: 30, marginLeft: 65, marginRight: 40}} justify='space-between' align='middle'>
-          <Col span={16}>
-            {!this.state.addExcel && (
-              <Button
-                className='primary'
-                onClick={this.handleAdd}
-                size="large"
-                type="primary">
-                <Icon type="plus" />
-                Agregar registro
-              </Button>
-            )}
-            {!this.state.addRow && (
-              <Upload
-                fileList=''
-                name="file"
-                beforeUpload={this.fileHandler}
-                onRemove={() => this.setState({ rows: [], addExcel: false })}
-                multiple={false}>
+        <div style= {{paddingBottom: '7.5em'}}>
+          <header>
+            <h1>Ingreso a la Educación Superior</h1>
+          </header>
+          <body>
+          {/* <Row gutter={5} style={{ marginTop: 30, marginLeft: 65, marginRight: 40}} justify='space-between' align='middle'>
+            <Col span={16}> */}
+            <div className="row" style={{ marginTop: "1.5em", marginLeft: 0, marginRight: 0, marginBottom: '1.5em', textAlign: 'center', witdh:'100%'}}>
+              <div className="col-lg-6 px-0" style={{ marginTop: 0, marginLeft: 0, marginRight: 0, marginBottom: 0, textAlign: 'center', witdh:'100%'}}>
+                {!this.state.addExcel && (
+                  <Button
+                    className='primary'
+                    onClick={this.handleAdd}
+                    size="large"
+                    type="primary">
+                    <Icon type="plus" />
+                    Agregar registro
+                  </Button>
+                )}
+                {!this.state.addRow && (
+                  <Upload
+                    fileList=''
+                    name="file"
+                    beforeUpload={this.fileHandler}
+                    onRemove={() => this.setState({ rows: [], addExcel: false })}
+                    multiple={false}>
+                    <Button
+                      className='sucess below-button-1'
+                      size="large"
+                      type="none"
+                      style={{ marginLeft: 6}}>
+                      <Icon type="upload" /> Cargar Excel
+                    </Button>
+                  </Upload>
+                )}
+              </div>
+            {/* </Col> */}
+            {/* <Col span={8} justify="end"> */}
+              <div className="col-lg-6 px-0 below-buttons" style={{ marginTop: 0, marginLeft: 0, marginRight: 0, marginBottom: 0, textAlign: 'center', witdh:'90%'}}>
+                {(this.state.addRow || this.state.addExcel) && (
+                  <Button
+                    onClick={this.handleDeleteAll}
+                    className='warning'
+                    size="large"
+                    type="none">
+                    <Icon type="undo" /> Reiniciar Todo
+                  </Button>
+                )}
                 <Button
-                  className='sucess'
+                  className={((this.state.addRow || this.state.addExcel) ? 'sucess below-button-2' : 'sucess')}
                   size="large"
                   type="none"
-                  style={{ marginLeft: 6}}>
-                  <Icon type="upload" /> Cargar Excel
+                  style={{ marginLeft: 10 }} >
+                    <a
+                      href={excel_sample}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      download>
+                      <Icon type="download" /> Excel de Ejemplo
+                    </a>
                 </Button>
-              </Upload>
-            )}
-          </Col>
-          <Col span={8} justify="end">
-            {(this.state.addRow || this.state.addExcel) && (
-              <Button
-                onClick={this.handleDeleteAll}
-                className='warning'
-                size="large"
-                type="none">
-                <Icon type="undo" /> Reiniciar Todo
-              </Button>
-            )}
-            <Button
-              className='sucess'
-              size="large"
-              type="none"
-              style={{ marginLeft: 10 }} >
-                <a
-                  href={excel_sample}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  download>
-                  <Icon type="download" /> Excel de Ejemplo
-                </a>
-            </Button>
-            <Button
-              className='primary'
-              onClick={this.handleSubmit}
-              size="large"
-              type="none"
-              style={{ marginLeft: 10 }}
-            >
-              <Icon type="upload" /> Ejecutar Predicción
-            </Button>
-          </Col>
-        </Row>
+                <Button
+                  className={((this.state.addRow || this.state.addExcel) ? 'primary below-button-2 below-button-3' : 'primary below-button-2')}
+                  onClick={this.handleSubmit}
+                  size="large"
+                  type="none"
+                  style={{ marginLeft: 10 }}
+                >
+                  <Icon type="upload" /> Ejecutar Predicción
+                </Button>
+                {/* </Col> */}
+              {/* </Row> */}
+              </div>
+            </div>
 
-        {/* <Row style={{ marginTop: 30, textAlign: 'center'}} justify='space-between' > */}
-          <div className='row' style={{ marginTop: 30, textAlign: 'center', witdh:'100%'}}>
-          {/* <Col span={12}> */}
-            <div className='col-md-6 px-0'>
-              <Button
-                className='menu'
-                size="large"
-                type="none"
-                block="True"
-                onClick={this.setTable}
-              >
-                Tabla
+            <div className='row' style={{ marginTop: 0, textAlign: 'center', width: '100%', marginLeft: '0', marginRight: '0'}}>
+              <div className='col-md-6 px-0 mx-0'>
+                <Button
+                  className='menu'
+                  size="large"
+                  type="none"
+                  block="True"
+                  onClick={this.setTable}
+                >
+                  Tabla
+                </Button>
+              </div>
+              <div className='col-md-6 px-0 mx-0'>
+                <Button
+                  className='menu'
+                  size="large"
+                  type="none"
+                  block="True"
+                  onClick={this.setGraph}
+                >
+                  Gráficos
+                </Button>
+              </div>
+            </div>
+
+          {(this.state.viewTable) && (
+            <div style={{ marginTop: 0 , marginLeft: 0, marginRight: 0, marginBottom: 0, paddingBottom: 0, textAlign: 'center'}} className="table px-0 mx-0" >
+              <Table
+                locale={{ emptyText: 'Sin Datos' }}
+                className="table-striped-rows"
+                components={components}
+                rowClassName={() => "editable-row"}
+                dataSource={this.state.rows}
+                columns={columns}
+                size="small"
+                bordered
+                pagination={{ pageSize: 5 }}
+                scroll={{
+                  x: 1500
+                }}
+              />
+            </div>
+          )}
+
+          {(this.state.viewTable && (this.state.addRow || this.state.addExcel)) && (
+            <div className='col-md-1 offset-md-1'>
+              <Button className='export'
+                  size="large"
+                  type="none"
+                  block="True" >
+                <CSVLink data={this.state.rows} filename='test.xlsx'>Exportar</CSVLink>
               </Button>
             </div>
-          {/* </Col> */}
-          {/* <Col span={12}> */}
-            <div className='col-md-6 px-0'>
-              <Button
-                className='menu'
-                size="large"
-                type="none"
-                block="True"
-                onClick={this.setGraph}
-              >
-                Gráficos
-              </Button>
-            </div>
-          </div>
-          {/* </Col> */}
-        {/* </Row> */}
+          )}
 
-        {/* <Row style={{ marginTop: 30, textAlign: 'center'}} justify='space-between' >
-          <Col span={12}>
-            <Button
-              className='menu'
-              size="large"
-              type="none"
-              block="True"
-              onClick={this.setTable}
-            >
-              Tabla
-            </Button>
+          {(this.state.viewGraph) && (
             
-          </Col>
-          <Col span={12}>
-            <Button
-              className='menu'
-              size="large"
-              type="none"
-              block="True"
-              onClick={this.setGraph}
-            >
-              Gráficos
-            </Button>
-          </Col>
-        </Row> */}
+            <div style={{ marginTop: 0 , marginLeft: 0, marginRight: 0}}>
+              {listColumns}
+              <Graph data ={this.state.dataToGraph} type={this.state.typeDataToGraph} subgroups={this.state.dataSubgroup}></Graph>
+            </div>
+          )}
 
-
-        {(this.state.viewTable) && (
-          <div style={{ marginTop: 0 , marginLeft: 0, marginRight: 0}} >
-            <Table
-              locale={{ emptyText: 'Sin Datos' }}
-              className="table-striped-rows"
-              components={components}
-              rowClassName={() => "editable-row"}
-              dataSource={this.state.rows}
-              columns={columns}
-              size="small"
-              bordered
-            />
-          </div>
-        )}
-
-
-          <div className='col-md-1 offset-md-1'>
-            <Button className='export'
-                size="large"
-                type="none"
-                block="True" >
-              <CSVLink data={this.state.rows} filename='test.xlsx'>Exportar</CSVLink>
-            </Button>
-          </div>
-
-
-        {(this.state.viewGraph) && (
-          
-          <div style={{ marginTop: 0 , marginLeft: 0, marginRight: 0}}>
-            {listColumns}
-            <Graph data ={this.state.dataToGraph} type={this.state.typeDataToGraph} subgroups={this.state.dataSubgroup}></Graph>
-          </div>
-        )}
-
-        </body>
-        <footer>
+          </body>
+        </div>
+        <footer style={{ width: "100%", position: 'absolute', bottom: 0, height: '6rem'}}>
           <Col span={12} className='containerFooter'>
             <h3>Analytics 11 <span>&#169;</span></h3>
           </Col>
@@ -667,7 +662,7 @@ export default class ExcelPage extends Component {
               </h3>
           </Col>
         </footer>
-      </>
+      </div>
     );
   }
 }
