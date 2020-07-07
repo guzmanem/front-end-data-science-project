@@ -4,7 +4,7 @@
 body {
   font-family: Arial, Helvetica, sans-serif;
   color: #333;
-  background-color: #fff;
+  background-color: #eeeeee !important;
   margin: 0;
   padding: 0;
 }
@@ -14,7 +14,7 @@ header {
   height: 6rem;
   width: 100%;
   color: #fff;
-  background: #0066bb  no-repeat right 10px;
+  background: #3a506b  no-repeat right 10px;
   background-size: contain;
   position: relative;
     h1 {
@@ -62,7 +62,7 @@ footer {
   left: 0;
   bottom: 0;
   width: 100%;
-  background-color: #0066bb ;
+  background-color: #3a506b ;
   color: white;
   text-align: center;
   height: 6rem;
@@ -96,12 +96,12 @@ footer {
 }
 
 .primary{
-  background-color: #117eeb;
+  background-color: #5bc0be;
   color: rgb(255,255,255);
   &:hover, &:focus  {
-    background-color: #0066CC;
+    background-color: #499998;
     color: rgb(200,200,200);
-    border-color: #0066CC;
+    border-color: #5bc0be;
   }
   -webkit-box-shadow: 5px 5px 5px 0px rgba(0,0,0,0.75);
   -moz-box-shadow: 5px 5px 5px 0px rgba(0,0,0,0.75);
@@ -109,16 +109,16 @@ footer {
   border-radius: 25px 25px 25px 25px;
   -moz-border-radius: 25px 25px 25px 25px;
   -webkit-border-radius: 25px 25px 25px 25px;
-  border: 0px solid #000000;
+  border: 0px solid #5bc0be;
 }
 
 .warning{
-  background-color: #ec4d18;
+  background-color: #c0675b;
   color: rgb(255,255,255);
   &:hover, &:focus  {
-    background-color: #cc3300;
+    background-color: #945047;
     color: rgb(200,200,200);
-    border-color: #cc3300;
+    border-color: #945047;
   }
   -webkit-box-shadow: 5px 5px 5px 0px rgba(0,0,0,0.75);
   -moz-box-shadow: 5px 5px 5px 0px rgba(0,0,0,0.75);
@@ -130,12 +130,12 @@ footer {
 }
 
 .sucess{
-  background-color: #248b3c;
+  background-color: #5bc068;
   color: rgb(255,255,255);
   &:hover, &:focus  {
-    background-color: #1D6F42;
+    background-color: #4ca358;
     color: rgb(200,200,200);
-    border-color: #1D6F42;
+    border-color: #4ca358;
   }
   -webkit-box-shadow: 5px 5px 5px 0px rgba(0,0,0,0.75);
   -moz-box-shadow: 5px 5px 5px 0px rgba(0,0,0,0.75);
@@ -147,12 +147,12 @@ footer {
 }
 
 .export{
-  background-color: #248b3c;
+  background-color: #5bc068;
   color: rgb(255,255,255);
   &:hover, &:focus  {
-    background-color: #1D6F42;
+    background-color: #4ca358;
     color: rgb(200,200,200);
-    border-color: #1D6F42;
+    border-color: #4ca358;
   }
   -webkit-box-shadow: 5px 5px 5px 0px rgba(0,0,0,0.75);
   -moz-box-shadow: 5px 5px 5px 0px rgba(0,0,0,0.75);
@@ -166,7 +166,7 @@ footer {
 }
 
 .menu{
-  background-color: #d7dfd2;
+  background-color: #3a506b;
   color: rgb(255,255,255);
   padding-left: 0 !important; 
   padding-right: 0 !important; 

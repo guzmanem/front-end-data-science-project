@@ -609,7 +609,7 @@ export default class ExcelPage extends Component {
             </div>
 
           {(this.state.viewTable) && (
-            <div style={{ marginTop: 0 , marginLeft: 0, marginRight: 0, marginBottom: 0, paddingBottom: 0, textAlign: 'center'}} className="table px-0 mx-0" >
+            <div style={{ marginTop: 0 , marginLeft: 0, marginRight: 0, marginBottom: 0, paddingBottom: 0, textAlign: 'center', backgroundColor: '#eeeeee !important'}} className="table px-0 mx-0" >
               <Table
                 locale={{ emptyText: 'Sin Datos' }}
                 className="table-striped-rows"
