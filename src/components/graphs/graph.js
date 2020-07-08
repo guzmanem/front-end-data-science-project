@@ -22,7 +22,7 @@ class Graph extends Component {
   drawBarPLot(){
     // set the dimensions and margins of the graph
     var margin = {top: 10, right: 30, bottom: 20, left: 50},
-        width = 460 - margin.left - margin.right,
+        width = 800 - margin.left - margin.right,
         height = 400 - margin.top - margin.bottom;
 
     // append the svg object to the body of the page
@@ -42,7 +42,6 @@ class Graph extends Component {
       var data = this.props.data
       // List of subgroups = header of the csv files = soil condition here
       var subgroups =  this.props.subgroups
-      debugger
 
       // List of groups = species here = value of the first column called group -> I show them on the X axis
       var groups = d3.map(data, function(d){return(d.group)}).keys()
@@ -98,17 +97,22 @@ class Graph extends Component {
   
   drawHistogramChart() {
     var margin = {top: 10, right: 30, bottom: 30, left: 40},
-    width = 460 - margin.left - margin.right,
+    width = 800 - margin.left - margin.right,
     height = 400 - margin.top - margin.bottom;
 
 // append the svg object to the body of the page
     var svg = d3.select("#canvas")
       .append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
+        // .attr("width", "100%")
+        // .attr("height", "100%")
+        .attr('viewBox','0 0 '+ 800 +' '+ 500)
+        // .attr('preserveAspectRatio','xMinYMin')
       .append("g")
+      // .attr("transform", "translate(" + Math.min(width,height) / 2 + "," + Math.min(width,height) / 2 + ")");
         .attr("transform",
               "translate(" + margin.left + "," + margin.top + ")");
+        // .attr("transform",
+        //       "translate(" + 20 + "," + 200 + ")");
     var data = this.props.data
 
     // X axis: scale and draw:
@@ -161,10 +165,10 @@ class Graph extends Component {
           .style("opacity", 0.6)
   
     // Handmade legend
-    svg.append("circle").attr("cx",300).attr("cy",30).attr("r", 6).style("fill", "#69b3a2")
-    svg.append("circle").attr("cx",300).attr("cy",60).attr("r", 6).style("fill", "#404080")
-    svg.append("text").attr("x", 320).attr("y", 30).text("Ingresa").style("font-size", "15px").attr("alignment-baseline","middle")
-    svg.append("text").attr("x", 320).attr("y", 60).text("No ingresa").style("font-size", "15px").attr("alignment-baseline","middle")
+    svg.append("circle").attr("cx",580).attr("cy",30).attr("r", 6).style("fill", "#69b3a2")
+    svg.append("circle").attr("cx",580).attr("cy",60).attr("r", 6).style("fill", "#404080")
+    svg.append("text").attr("x", 600).attr("y", 30).text("Ingresa").style("font-size", "15px").attr("alignment-baseline","middle")
+    svg.append("text").attr("x", 600).attr("y", 60).text("No ingresa").style("font-size", "15px").attr("alignment-baseline","middle")
   }
   render() { return <div id="canvas" ref="canvas"></div> }
 }

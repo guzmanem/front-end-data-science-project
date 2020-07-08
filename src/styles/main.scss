@@ -174,18 +174,82 @@ footer {
   margin-left: 0 !important;
   width: 100% !important; 
   &:hover, &:focus  {
-    background-color: #b7beb2;
+    background-color: #2d3f55;
     color: rgb(200,200,200);
-    border-color: #b7beb2;
+    border-color: #2d3f55;
   }
 }
 
 #canvas{
-  position: absolute;
+  position: relative;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -45%);
+  height: 400px;
+  width: 800px !important;
+
 }
+
+@media (max-width: 1200px) {
+  #canvas {
+    margin-top: 1.5em;
+    margin-bottom: 2rem;
+    transform: translate(-50%, -50%);
+    height: 350px;
+    width: 700px !important;
+  }
+}
+
+@media (max-width: 1100px) {
+  #canvas {
+    margin-top: 1.5em;
+    margin-bottom: 2rem;
+    transform: translate(-50%, -50%);
+    height: 300px;
+    width: 600px !important;
+  }
+}
+
+@media (max-width: 991px) {
+  #canvas {
+    margin-top: 1.5em;
+    margin-bottom: 2rem;
+    transform: translate(-50%, -50%);
+    height: 300px;
+    width: 600px !important;
+  }
+}
+
+@media (max-width: 650px) {
+  #canvas {
+    margin-top: 1.5em;
+    margin-bottom: 2rem;
+    transform: translate(-50%, -50%);
+    height: 250px;
+    width: 500px !important;
+  }
+}
+
+@media (max-width: 500px) {
+  #canvas {
+    margin-top: 1.5em;
+    margin-bottom: 2rem;
+    transform: translate(-50%, -50%);
+    height: 200px;
+    width: 400px !important;
+  }
+}
+
+@media (max-width: 400px) {
+  #canvas {
+    margin-top: 1.5em;
+    margin-bottom: 2rem;
+    transform: translate(-50%, -50%);
+    height: 200px;
+    width: 300px !important;
+  }
+}
+
 
 .table{
   width: 100%;
@@ -222,5 +286,91 @@ footer {
 @media (minwidth: 376px) {
   .below-buttons{
     margin-top: 1em !important;
+  }
+}
+
+
+.bulgy-radios {
+  width: 100%;
+  background: #eeeeee;
+  padding: 3rem 0 0rem 0rem;
+  border-radius: 1rem;
+  label {
+    display: block;
+    position: relative;
+    height: 1em;
+    padding-left: 2.5rem;
+    margin-bottom: 1.25rem;
+    cursor: pointer;
+    font-size: 0.75rem;
+    user-select: none;
+    color: #555;
+    letter-spacing: 1px;
+    &:hover input:not(:checked) ~ .radio {
+      opacity: 0.8;
+    }
+  }
+  .label {
+    display: flex;
+    align-items: center;
+    padding-right: 0rem;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    span {
+      line-height: 1em;
+    }
+  }
+  input {
+    position: absolute;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+    left: -2000px;
+
+    &:checked {
+      ~ .radio {
+        background-color: #0ac07d;
+        transition: background .3s;
+        &::after {
+          opacity: 1;
+        }
+      }
+      ~ .label {
+        color: #0bae72;
+        span {
+          animation: bulge .5s forwards;
+        }
+
+        //adjust this if label is going to be more than 20 chars
+        @for $i from 1 to 20 {
+          span:nth-child(#{$i}) { animation-delay: $i * 0.025s; }
+        }
+      }
+    }
+  }
+}
+.radio {
+  top: -0.1rem;
+  left: 0;
+  height: 1.25rem;
+  width: 1.25rem;
+  background: #c9ded6;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-500%, -50%);
+  &::after {
+    content: '';
+    position: absolute;
+    opacity: 0;
+    top: .25rem;
+    left: .25rem;
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 50%;
+    background: #fff;
   }
 }

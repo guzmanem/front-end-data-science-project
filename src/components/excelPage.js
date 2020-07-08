@@ -6,7 +6,7 @@ import React, { Component } from "react";
 import { Table, Button, Popconfirm, Row, Col, Icon, Upload } from "antd";
 import { ExcelRenderer } from "react-excel-renderer";
 import { EditableFormRow, EditableCell } from "../utils/editable";
-import excel_sample from '../excel/Excel_Ejemplo.xlsx'
+import excel_sample from '../excel/GuiaIngresoEducSuperior.xlsx'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import '../styles/main.scss'
@@ -21,6 +21,7 @@ export default class ExcelPage extends Component {
     this.state = {
       cols: [],
       rows: [],
+      disabledTograph: true,
       dataToGraph: [],
       dataSubgroup: [],
       typeDataToGraph: '',
@@ -51,11 +52,23 @@ export default class ExcelPage extends Component {
         "prediction": 'number'
       },
       columnsTrans:{
+        "key": "ID",
         "name": "Nombre",
-        "age":"Edad",
-        "gender":"Género",
-        "score":"Puntaje",
-        "institute":"Instituto"
+        "average_psu": "PSU",
+        "average_nem": "NEM",
+        "prom_notas_alu": "4to Medio",
+        "cod_pro_rbd": "Provincia",
+        "cod_depe2": "Dependencia",
+        "rural_rbd": "Ruralidad",
+        "cod_ense": "Enseñanza",
+        "cod_jor": "Jornada",
+        "cod_des_cur": "Curso",
+        "gen_alu": "Sexo",
+        "edad_alu": "Edad",
+        "alums_pref": "Pref. (Aula)",
+        "alums_prior": "Prioritarios (Aula)",
+        "alumns_class": "Alumnos (Aula)",
+        "prediction": 'Ingreso'
       },
       columns: [
         {
@@ -89,7 +102,7 @@ export default class ExcelPage extends Component {
           width: 100
         },
         {
-          title: "Instituto",
+          title: "Provincia",
           dataIndex: "cod_pro_rbd",
           editable: true,
           width: 100
@@ -113,6 +126,12 @@ export default class ExcelPage extends Component {
           width: 100
         },
         {
+          title: "Jornada",
+          dataIndex: "cod_jor",
+          editable: true,
+          width: 100
+        },
+        {
           title: "Curso",
           dataIndex: "cod_des_cur",
           editable: true,
@@ -131,7 +150,7 @@ export default class ExcelPage extends Component {
           width: 100
         },
         {
-          title: "Preferenciales (Aula)",
+          title: "Pref. (Aula)",
           dataIndex: "alums_pref",
           editable: true,
           width: 150
@@ -214,7 +233,7 @@ export default class ExcelPage extends Component {
     this.setState({ errorFlash: [], successFlash: [] })
     console.log("fileList", fileList);
     let fileObj = fileList;
-    this.setState({ addExcel: true, addRow: true })
+    this.setState({ addExcel: true, addRow: true, disabledTograph: true })
     if (!fileObj) {
       this.setState({
         errorMessage: "Ningú archivo fue subido"
@@ -245,8 +264,21 @@ export default class ExcelPage extends Component {
             newRows.push({
               key: index,
               name: row[0],
-              age: row[1],
-              gender: row[2]
+              average_psu: row[1],
+              average_nem: row[2],
+              prom_notas_alu: row[3],
+              cod_pro_rbd: row[4],
+              cod_depe2: row[5],
+              rural_rbd: row[6],
+              cod_ense: row[7],
+              cod_jor: row[8],
+              cod_des_cur: row[9],
+              gen_alu: row[10],
+              edad_alu: row[11],
+              alums_pref: row[12],
+              alums_prior: row[13],
+              alumns_class: row[14],
+              prediction: ''
             });
           }
         });
@@ -278,7 +310,7 @@ export default class ExcelPage extends Component {
         if(key==='key' || key==='prediction'){
           continue
         }
-        if(Object.keys(row).length  <= Object.keys(types).length){
+        if(Object.keys(row).length + 1 <= Object.keys(types).length){
           messages.push('El registro ' + row['key'] + ' necesita tener todos los valores')
           break
         }
@@ -295,7 +327,7 @@ export default class ExcelPage extends Component {
       }
     });
     if(messages.length > 0){
-      this.setState({ errorFlash: messages})
+      this.setState({ errorFlash: messages, disabledTograph: true })
     } else {
       var rows = this.state.rows
       axios.post("https://api-data-science-project.herokuapp.com/api/v1/",{
@@ -308,10 +340,10 @@ export default class ExcelPage extends Component {
           element['prediction'] = response["data"][index]
           return element
         })
-        this.setState({ rows: new_data, successFlash: ['Se cargaron las predicciones correctamente.'] })
+        this.setState({ rows: new_data, successFlash: ['Se cargaron las predicciones correctamente.'], disabledTograph: false })
       })
       .catch(err => {
-        this.setState({ errorFlash: ['Error inesperado obteniendo las predicciones.']})
+        this.setState({ errorFlash: ['Error inesperado obteniendo las predicciones.'], disabledTograph: true})
       });
     }
   };
@@ -328,7 +360,7 @@ export default class ExcelPage extends Component {
   handleDeleteAll = key => {
     const rows = [...this.state.rows];
     this.setState({ rows: [], addExcel: false, addRow:false });
-    this.setState({ errorFlash: [], successFlash: [] })
+    this.setState({ errorFlash: [], successFlash: [], disabledTograph: true })
   };
 
   setTable = () => {
@@ -370,7 +402,8 @@ export default class ExcelPage extends Component {
     this.setState({
       addRow: true,
       rows: [newData, ...rows],
-      count: this.state.count + 1
+      count: this.state.count + 1,
+      disabledTograph: true
     });
     this.setState({ errorFlash: [], successFlash: [] })
   };
@@ -404,8 +437,20 @@ export default class ExcelPage extends Component {
       for (const value of values){
         data.push(value)
       }
-      this.setState({ dataToGraph: data, typeDataToGraph: type, dataSubgroup: ["Ingreso", "NoIngreso"] })
+      this.setState({ dataToGraph: data, typeDataToGraph: type, dataSubgroup: ["Ingreso", "NoIngreso"], successFlash: [], errorFlash: [] } )
     }
+  }
+
+  dataExport = (data) => {
+    var array = []
+    data.forEach((row) => {
+      var dict_tmp = {}
+      for(var key in row) {
+        dict_tmp[this.state.columnsTrans[key]] = row[key]
+      }
+      array.push(dict_tmp)
+    })
+    return array
   }
 
   render() {
@@ -461,7 +506,7 @@ export default class ExcelPage extends Component {
 
     var columnsToGraph = (
       this.state.columns.filter((element) =>{
-        if ((element.title === 'key') || (element.title ==='action')){
+        if ((element.dataIndex == 'key') || (element.dataIndex =='action') || (element.dataIndex == 'prediction') || (element.dataIndex == 'name ')){
           return false
         } else {
           return true
@@ -470,14 +515,16 @@ export default class ExcelPage extends Component {
     ))
   
     var listColumns= (
-      <div className='columnsList' onChange={this.dataGraph}>
-        {columnsToGraph.map( (element,index) => (
-          <div>
-            <input type="radio" value={element.dataIndex} name='columnsToGraph' />{element.title}
-          </div>
+      <div className='bulgy-radios' onChange={this.dataGraph}>
+        {columnsToGraph.map( (element) => (
+          <label>
+            <input type="radio" value={element.dataIndex} name='columnsToGraph' /><span class="radio"></span><span class="label">{element.title}</span>
+          </label>
         ))}
       </div>
     );
+
+
   
     return (
       <div style={{position: 'relative', minHeight: '100vh'}}>
@@ -513,8 +560,6 @@ export default class ExcelPage extends Component {
             <h1>Ingreso a la Educación Superior</h1>
           </header>
           <body>
-          {/* <Row gutter={5} style={{ marginTop: 30, marginLeft: 65, marginRight: 40}} justify='space-between' align='middle'>
-            <Col span={16}> */}
             <div className="row" style={{ marginTop: "1.5em", marginLeft: 0, marginRight: 0, marginBottom: '1.5em', textAlign: 'center', witdh:'100%'}}>
               <div className="col-lg-6 px-0" style={{ marginTop: 0, marginLeft: 0, marginRight: 0, marginBottom: 0, textAlign: 'center', witdh:'100%'}}>
                 {!this.state.addExcel && (
@@ -544,8 +589,6 @@ export default class ExcelPage extends Component {
                   </Upload>
                 )}
               </div>
-            {/* </Col> */}
-            {/* <Col span={8} justify="end"> */}
               <div className="col-lg-6 px-0 below-buttons" style={{ marginTop: 0, marginLeft: 0, marginRight: 0, marginBottom: 0, textAlign: 'center', witdh:'90%'}}>
                 {(this.state.addRow || this.state.addExcel) && (
                   <Button
@@ -578,8 +621,6 @@ export default class ExcelPage extends Component {
                 >
                   <Icon type="upload" /> Ejecutar Predicción
                 </Button>
-                {/* </Col> */}
-              {/* </Row> */}
               </div>
             </div>
 
@@ -602,6 +643,7 @@ export default class ExcelPage extends Component {
                   type="none"
                   block="True"
                   onClick={this.setGraph}
+                  disabled={this.state.disabledTograph}
                 >
                   Gráficos
                 </Button>
@@ -633,16 +675,20 @@ export default class ExcelPage extends Component {
                   size="large"
                   type="none"
                   block="True" >
-                <CSVLink data={this.state.rows} filename='test.xlsx'>Exportar</CSVLink>
+                <CSVLink data={this.dataExport(this.state.rows)} filename='test.xlsx'>Exportar</CSVLink>
               </Button>
             </div>
           )}
 
           {(this.state.viewGraph) && (
             
-            <div style={{ marginTop: 0 , marginLeft: 0, marginRight: 0}}>
-              {listColumns}
-              <Graph data ={this.state.dataToGraph} type={this.state.typeDataToGraph} subgroups={this.state.dataSubgroup}></Graph>
+            <div className="row" style={{ marginTop: "1.5em", marginLeft: 0, marginRight: 0, marginBottom: '1.5em', textAlign: 'center', witdh:'100%'}}>
+              <div className="col-lg-4">
+                {listColumns}
+              </div>
+              <div className="col-lg-8" tyle={{ paddingTop: "1.5em", paddingLeft: 0, paddingRight: 0, paddingBottom: '1.5em', textAlign: 'center', witdh:'100%'}}>
+                <Graph data ={this.state.dataToGraph} type={this.state.typeDataToGraph} subgroups={this.state.dataSubgroup}></Graph>
+              </div>
             </div>
           )}
 
