@@ -11,12 +11,11 @@ class Graph extends Component {
 
   componentDidUpdate() {
     d3.select("#canvas").selectAll("*").remove()
-    if(this.props.type == 'number'){
+    if(this.props.type == 'histogram'){
       this.drawHistogramChart()
     } else {
       this.drawBarPLot()
     }
-    
   }
 
   drawBarPLot(){
@@ -27,12 +26,17 @@ class Graph extends Component {
 
     // append the svg object to the body of the page
     var svg = d3.select("#canvas")
-      .append("svg")  
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
+      .append("svg")
+        // .attr("width", "100%")
+        // .attr("height", "100%")
+        .attr('viewBox','0 0 '+ 800 +' '+ 500)
+        // .attr('preserveAspectRatio','xMinYMin')
       .append("g")
+      // .attr("transform", "translate(" + Math.min(width,height) / 2 + "," + Math.min(width,height) / 2 + ")");
         .attr("transform",
               "translate(" + margin.left + "," + margin.top + ")");
+        // .attr("transform",
+        //       "translate(" + 20 + "," + 200 + ")");
 
               // var data2= [{group: 'banana', Nitrogen: "12", normal: "1", stress: "13"},
               // {group: "poacee", Nitrogen: "6", normal: "6", stress: "33"},
@@ -51,9 +55,9 @@ class Graph extends Component {
           .domain(groups)
           .range([0, width])
           .padding([0.2])
-      svg.append("g")
-        .attr("transform", "translate(0," + height + ")")
-        .call(d3.axisBottom(x).tickSize(0));
+      // svg.append("g")
+      //   .attr("transform", "translate(0," + height + ")")
+      //   .call(d3.axisBottom(x).tickSize(0));
 
       // Add Y axis
       var y = d3.scaleLinear()
@@ -73,6 +77,26 @@ class Graph extends Component {
         .domain(subgroups)
         .range(['#69b3a2','#404080'])
 
+      svg.append("text")
+        .attr("class", "y label")
+        .attr("text-anchor", "end")
+        .attr("y", -40)
+        .attr("dy", ".75em")
+        .attr("x", -150)
+        .attr("dx", ".75em")
+        .attr("transform", "rotate(-90)")
+        .text("Frecuencia");
+
+      svg.append("g")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(x)).attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .selectAll("text")  
+        .style("text-anchor", "end")
+        .attr("dx", "-.8em")
+        .attr("dy", ".15em")
+        .attr("transform", "rotate(-45)");
+
       // Show the bars
       svg.append("g")
         .selectAll("g")
@@ -89,10 +113,10 @@ class Graph extends Component {
           .attr("width", xSubgroup.bandwidth())
           .attr("height", function(d) { return height - y(d.value); })
           .attr("fill", function(d) { return color(d.key); });
-      svg.append("circle").attr("cx",300).attr("cy",30).attr("r", 6).style("fill", "#69b3a2")
-      svg.append("circle").attr("cx",300).attr("cy",60).attr("r", 6).style("fill", "#404080")
-      svg.append("text").attr("x", 320).attr("y", 30).text("Ingresa").style("font-size", "15px").attr("alignment-baseline","middle")
-      svg.append("text").attr("x", 320).attr("y", 60).text("No ingresa").style("font-size", "15px").attr("alignment-baseline","middle")
+        svg.append("circle").attr("cx",580).attr("cy",30).attr("r", 6).style("fill", "#69b3a2")
+        svg.append("circle").attr("cx",580).attr("cy",60).attr("r", 6).style("fill", "#404080")
+        svg.append("text").attr("x", 600).attr("y", 30).text("Ingresa").style("font-size", "15px").attr("alignment-baseline","middle")
+        svg.append("text").attr("x", 600).attr("y", 60).text("No ingresa").style("font-size", "15px").attr("alignment-baseline","middle")
   }
   
   drawHistogramChart() {
@@ -117,17 +141,23 @@ class Graph extends Component {
 
     // X axis: scale and draw:
     var x = d3.scaleLinear()
-        .domain([d3.min(data, function(d) { return +d.value }) - 10 ,d3.max(data, function(d) { return +d.value })+ 10 ])     // can use this instead of 1000 to have the max of data: d3.max(data, function(d) { return +d.price })
+        .domain([d3.min(data, function(d) { return +d.value }) - 5 ,d3.max(data, function(d) { return +d.value })+ 5 ])     // can use this instead of 1000 to have the max of data: d3.max(data, function(d) { return +d.price })
         .range([0, width]);
     svg.append("g")
         .attr("transform", "translate(0," + height + ")")
-        .call(d3.axisBottom(x));
+        .call(d3.axisBottom(x)).attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .selectAll("text")  
+        .style("text-anchor", "end")
+        .attr("dx", "-.8em")
+        .attr("dy", ".15em")
+        .attr("transform", "rotate(-45)");
   
     // set the parameters for the histogram
     var histogram = d3.histogram()
         .value(function(d) { return +d.value; })   // I need to give the vector of value
         .domain(x.domain())  // then the domain of the graphic
-        .thresholds(x.ticks(10)); // then the numbers of bins
+        .thresholds(x.ticks(20)); // then the numbers of bins
   
     // And apply twice this function to data to get the bins.
     var bins1 = histogram(data.filter( function(d){return d.type === 1} ));
@@ -164,6 +194,15 @@ class Graph extends Component {
           .style("fill", "#404080")
           .style("opacity", 0.6)
   
+    svg.append("text")
+      .attr("class", "y label")
+      .attr("text-anchor", "end")
+      .attr("y", -40)
+      .attr("dy", ".75em")
+      .attr("x", -150)
+      .attr("dx", ".75em")
+      .attr("transform", "rotate(-90)")
+      .text("Frecuencia");
     // Handmade legend
     svg.append("circle").attr("cx",580).attr("cy",30).attr("r", 6).style("fill", "#69b3a2")
     svg.append("circle").attr("cx",580).attr("cy",60).attr("r", 6).style("fill", "#404080")

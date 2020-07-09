@@ -70,6 +70,25 @@ export default class ExcelPage extends Component {
         "alumns_class": "Alumnos (Aula)",
         "prediction": 'Ingreso'
       },
+      columnsGraph:{
+        "key": "same",
+        "name": "same",
+        "average_psu": "histogram",
+        "average_nem": "histogram",
+        "prom_notas_alu": "histogram",
+        "cod_pro_rbd": "barplot",
+        "cod_depe2": "barplot",
+        "rural_rbd": "barplot",
+        "cod_ense": "barplot",
+        "cod_jor": "barplot",
+        "cod_des_cur": "barplot",
+        "gen_alu": "barplot",
+        "edad_alu": "barplot",
+        "alums_pref": "histogram",
+        "alums_prior": "histogram",
+        "alumns_class": "histogram",
+        "prediction": 'Ingreso'
+      },
       columns: [
         {
           title: "ID",
@@ -409,8 +428,8 @@ export default class ExcelPage extends Component {
   };
 
   dataGraph = (event) =>{
-    var type = this.state.columnsTypes[event.target.value]
-    if(type == 'number'){
+    var type = this.state.columnsGraph[event.target.value]
+    if(type == 'histogram'){
       var data = this.state.rows.map( (element) =>{
         return {type: element.prediction, value: element[event.target.value] }
       })
@@ -506,7 +525,7 @@ export default class ExcelPage extends Component {
 
     var columnsToGraph = (
       this.state.columns.filter((element) =>{
-        if ((element.dataIndex == 'key') || (element.dataIndex =='action') || (element.dataIndex == 'prediction') || (element.dataIndex == 'name ')){
+        if ((element.dataIndex == 'key') || (element.dataIndex =='action') || (element.dataIndex == 'prediction') || (element.dataIndex == 'name')){
           return false
         } else {
           return true
@@ -566,6 +585,7 @@ export default class ExcelPage extends Component {
                   <Button
                     className='primary'
                     onClick={this.handleAdd}
+                    disabled={!this.state.viewTable}
                     size="large"
                     type="primary">
                     <Icon type="plus" />
@@ -583,6 +603,7 @@ export default class ExcelPage extends Component {
                       className='sucess below-button-1'
                       size="large"
                       type="none"
+                      disabled={!this.state.viewTable}
                       style={{ marginLeft: 6}}>
                       <Icon type="upload" /> Cargar Excel
                     </Button>
@@ -595,7 +616,8 @@ export default class ExcelPage extends Component {
                     onClick={this.handleDeleteAll}
                     className='warning'
                     size="large"
-                    type="none">
+                    type="none"
+                    disabled={!this.state.viewTable}>
                     <Icon type="undo" /> Reiniciar Todo
                   </Button>
                 )}
@@ -603,6 +625,7 @@ export default class ExcelPage extends Component {
                   className={((this.state.addRow || this.state.addExcel) ? 'sucess below-button-2' : 'sucess')}
                   size="large"
                   type="none"
+                  disabled={!this.state.viewTable}
                   style={{ marginLeft: 10 }} >
                     <a
                       href={excel_sample}
@@ -618,6 +641,7 @@ export default class ExcelPage extends Component {
                   size="large"
                   type="none"
                   style={{ marginLeft: 10 }}
+                  disabled={!this.state.viewTable}
                 >
                   <Icon type="upload" /> Ejecutar Predicción
                 </Button>
@@ -675,7 +699,7 @@ export default class ExcelPage extends Component {
                   size="large"
                   type="none"
                   block="True" >
-                <CSVLink data={this.dataExport(this.state.rows)} filename='test.xlsx'>Exportar</CSVLink>
+                <CSVLink data={this.dataExport(this.state.rows)} filename='IngresoEducSuperiorResultados.xlsx'>Exportar</CSVLink>
               </Button>
             </div>
           )}
