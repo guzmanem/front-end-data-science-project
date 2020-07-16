@@ -443,7 +443,7 @@ export default class ExcelPage extends Component {
     }
   }
 
-  rurarlidad = {
+  metaData = {
     "cod_pro_rbd":{
       "11": "Iquique",
       "14": "Tamarugal",
@@ -710,9 +710,9 @@ export default class ExcelPage extends Component {
           }
         } else{ 
           if(element.prediction == "No Ingresa"){
-            dict[element[event.target.value]] = { group: this.rurarlidad[event.target.value][element[event.target.value]] , Ingreso: 1, NoIngreso: 0}
+            dict[element[event.target.value]] = { group: this.metaData[event.target.value][element[event.target.value]] , Ingreso: 1, NoIngreso: 0}
           } else {
-            dict[element[event.target.value]] = { group: this.rurarlidad[event.target.value][element[event.target.value]] , Ingreso: 0, NoIngreso: 1}
+            dict[element[event.target.value]] = { group: this.metaData[event.target.value][element[event.target.value]] , Ingreso: 0, NoIngreso: 1}
           }
         }
       })
