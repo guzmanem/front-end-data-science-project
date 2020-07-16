@@ -13,6 +13,7 @@ import '../styles/main.scss'
 import { CSVLink } from 'react-csv'
 import Graph from './graphs/graph'
 import axios from "axios";
+import { color } from 'd3';
 
 
 export default class ExcelPage extends Component {
@@ -190,7 +191,13 @@ export default class ExcelPage extends Component {
           title: "Ingreso",
           dataIndex: "prediction",
           editable: false,
-          width: 100
+          width: 100,
+          render: (text, record) =>
+          this.state.rows.length >= 1 ? (
+            <p style={{ color: text == "No Ingresa" ? "red" : "green"}}>
+              {text}
+            </p>
+          ) : null
         },
         {
           title: "Acciones",
@@ -356,7 +363,8 @@ export default class ExcelPage extends Component {
         body: rows})
       .then(response => {
         var new_data = this.state.rows.map((element, index)=>{
-          element['prediction'] = response["data"][index]
+          var pred = response["data"][index]
+          element['prediction'] = pred == 0 ? "No Ingresa" :  "Ingresa"
           return element
         })
         this.setState({ rows: new_data, successFlash: ['Se cargaron las predicciones correctamente.'], disabledTograph: false })
@@ -427,27 +435,284 @@ export default class ExcelPage extends Component {
     this.setState({ errorFlash: [], successFlash: [] })
   };
 
+  predictionData = (data) =>{
+    if(data == "Ingresa"){
+      return 1
+    } else {
+      return 0
+    }
+  }
+
+  rurarlidad = {
+    "cod_pro_rbd":{
+      "11": "Iquique",
+      "14": "Tamarugal",
+      "21": "Antofagasta",
+      "22": "El Loa",
+      "23": "Tocopilla",
+      "31": "Copiapo",
+      "32": "Chañaral",
+      "33": "Huasco",
+      "41": "Elqui",
+      "42": "Choapa",
+      "43": "Limari",
+      "51": "Valparaiso",
+      "52": "Isla de Pascua",
+      "53": "Los Andes",
+      "54": "Petorca",
+      "55": "Quillota",
+      "56": "San Antonio",
+      "57": "San Felipe de Aconcagua",
+      "58": "Marga Marga",
+      "61": "Cachapoal",
+      "62": "Cardenal Caro",
+      "63": "Colchagua",
+      "71": "Talca",
+      "72": "Cauquenes",
+      "73": "Curico",
+      "74": "Linares",
+      "81": "Concepcion",
+      "82": "Arauco",
+      "83": "Biobío",
+      "84": "Ñuble",
+      "91": "Cautín",
+      "92": "Malleco",
+      "101": "Llanquihue",
+      "102": "Chiloé",
+      "103": "Osorno",
+      "104": "Palena",
+      "111": "Coyhaique",
+      "112": "Aysén",
+      "113": "Capitán Prat",
+      "114": "General Carrera",
+      "121": "Magallanes",
+      "122": "Antártica Chilena",
+      "123": "Tierra del Fuego",
+      "124": "Última Esperanza",
+      "131": "Santiago",
+      "132": "Cordillera",
+      "133": "Chacabuco",
+      "134": "Maipo",
+      "135": "Melipilla",
+      "136": "Talagante",
+      "141": "Valdivia",
+      "142": "Ranco",
+      "151": "Arica",
+      "152": "Parinacota",
+      "161": "Diguillin",
+      "162": "Itata",
+      "163": "Punilla"
+    },
+    "cod_depe2": {
+      "2": "Subvencionado",
+      "3": "Pagado",
+      "4": "Corporación"
+    },
+    "rural_rbd": {
+      "0": "Urbano",
+      "1": "Rural"
+    },
+    "cod_ense": {
+      "363": "Adultos",
+      "310": "Jóvenes",
+      "410": "Comercial Jóvenes",
+      "463": "Comercial Adultos",
+      "510": "Industrial Jóvenes",
+      "563": "Industrial Adultos",
+      "610": "Técnica Jóvenes",
+      "663": "Técnica Adultos",
+      "710": "Agrícola Jóvenes",
+      "763": "Agrícola Adultos",
+      "810": "Marítima Jóvenes",
+      "863": "Marítima Adultos",
+      "910": "Artística Jóvenes"
+    },
+    "cod_jor": {
+      "1": "Mañana",
+      "2": "Tarde",
+      "3": "Mañana / Tarde",
+      "4": "Vespertina / Nocturna"
+    },
+    "cod_des_cur": {
+      "0": "No aplica",
+      "1": "Liceo",
+      "2": "Dual",
+      "3": "Otro"
+    },
+    "gen_alu": {
+      "0": "Sin información",
+      "1": "Hombre",
+      "2": "Mujer"
+    },
+    "edad_alu": {
+      "1": "1",
+      "2": "2",
+      "3": "3",
+      "4": "4",
+      "5": "5",
+      "6": "6",
+      "7": "7",
+      "8": "8",
+      "9": "9",
+      "10": "10",
+      "11": "11",
+      "12": "12",
+      "13": "13",
+      "14": "14",
+      "15": "15",
+      "16": "16",
+      "17": "17",
+      "18": "18",
+      "19": "19",
+      "20": "20",
+      "21": "21",
+      "22": "22",
+      "23": "23",
+      "24": "24",
+      "25": "25",
+      "26": "26",
+      "27": "27",
+      "28": "28",
+      "29": "29",
+      "30": "30",
+      "31": "31",
+      "32": "32",
+      "33": "33",
+      "34": "34",
+      "35": "35",
+      "36": "36",
+      "37": "37",
+      "38": "38",
+      "39": "39",
+      "40": "40",
+      "41": "41",
+      "42": "42",
+      "43": "43",
+      "44": "44",
+      "45": "45",
+      "46": "46",
+      "47": "47",
+      "48": "48",
+      "49": "49",
+      "50": "50",
+      "51": "51",
+      "52": "52",
+      "53": "53",
+      "54": "54",
+      "55": "55",
+      "56": "56",
+      "57": "57",
+      "58": "58",
+      "59": "59",
+      "60": "60",
+      "61": "61",
+      "62": "62",
+      "63": "63",
+      "64": "64",
+      "65": "65",
+      "66": "66",
+      "67": "67",
+      "68": "68",
+      "69": "69",
+      "70": "70",
+      "71": "71",
+      "72": "72",
+      "73": "73",
+      "74": "74",
+      "75": "75",
+      "76": "76",
+      "77": "77",
+      "78": "78",
+      "79": "79",
+      "80": "80",
+      "81": "81",
+      "82": "82",
+      "83": "83",
+      "84": "84",
+      "85": "85",
+      "86": "86",
+      "87": "87",
+      "88": "88",
+      "89": "89",
+      "90": "90",
+      "91": "91",
+      "92": "92",
+      "93": "93",
+      "94": "94",
+      "95": "95",
+      "96": "96",
+      "97": "97",
+      "98": "98",
+      "99": "99",
+      "100": "100",
+      "101": "101",
+      "102": "102",
+      "103": "103",
+      "104": "104",
+      "105": "105",
+      "106": "106",
+      "107": "107",
+      "108": "108",
+      "109": "109",
+      "110": "110",
+      "111": "111",
+      "112": "112",
+      "113": "113",
+      "114": "114",
+      "115": "115",
+      "116": "116",
+      "117": "117",
+      "118": "118",
+      "119": "119",
+      "120": "120",
+      "121": "121",
+      "122": "122",
+      "123": "123",
+      "124": "124",
+      "125": "125",
+      "126": "126",
+      "127": "127",
+      "128": "128",
+      "129": "129",
+      "130": "130",
+      "131": "131",
+      "132": "132",
+      "133": "133",
+      "134": "134",
+      "135": "135",
+      "136": "136",
+      "137": "137",
+      "138": "138",
+      "139": "139",
+      "140": "140",
+      "141": "141",
+      "142": "142",
+      "143": "143",
+      "144": "144"
+    }
+  }
+
   dataGraph = (event) =>{
     var type = this.state.columnsGraph[event.target.value]
     if(type == 'histogram'){
       var data = this.state.rows.map( (element) =>{
-        return {type: element.prediction, value: element[event.target.value] }
+        return {type: this.predictionData(element.prediction), value: element[event.target.value] }
       })
       this.setState({ dataToGraph: data, typeDataToGraph: type})
     } else { 
       var dict = {}
       this.state.rows.forEach( (element) =>{
         if(dict[element[event.target.value]] !== undefined){
-          if(element.prediction == 1){
+          if(element.prediction == "Ingresa"){
             dict[element[event.target.value]]['Ingreso'] += 1
           } else {
             dict[element[event.target.value]]['NoIngreso'] += 1
           }
         } else{ 
-          if(element.prediction == 1){
-            dict[element[event.target.value]] = { group: element[event.target.value] , Ingreso: 1, NoIngreso: 0}
+          if(element.prediction == "No Ingresa"){
+            dict[element[event.target.value]] = { group: this.rurarlidad[event.target.value][element[event.target.value]] , Ingreso: 1, NoIngreso: 0}
           } else {
-            dict[element[event.target.value]] = { group: element[event.target.value] , Ingreso: 0, NoIngreso: 1}
+            dict[element[event.target.value]] = { group: this.rurarlidad[event.target.value][element[event.target.value]] , Ingreso: 0, NoIngreso: 1}
           }
         }
       })

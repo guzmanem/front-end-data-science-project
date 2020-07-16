@@ -27,38 +27,24 @@ class Graph extends Component {
     // append the svg object to the body of the page
     var svg = d3.select("#canvas")
       .append("svg")
-        // .attr("width", "100%")
-        // .attr("height", "100%")
         .attr('viewBox','0 0 '+ 800 +' '+ 500)
-        // .attr('preserveAspectRatio','xMinYMin')
       .append("g")
-      // .attr("transform", "translate(" + Math.min(width,height) / 2 + "," + Math.min(width,height) / 2 + ")");
         .attr("transform",
               "translate(" + margin.left + "," + margin.top + ")");
-        // .attr("transform",
-        //       "translate(" + 20 + "," + 200 + ")");
-
-              // var data2= [{group: 'banana', Nitrogen: "12", normal: "1", stress: "13"},
-              // {group: "poacee", Nitrogen: "6", normal: "6", stress: "33"},
-              // {group: "sorgho", Nitrogen: "11", normal: "28", stress: "12"},
-              // {group: "triticum", Nitrogen: "19", normal: "6", stress: "1"}]
-
+      
       var data = this.props.data
+
       // List of subgroups = header of the csv files = soil condition here
       var subgroups =  this.props.subgroups
 
       // List of groups = species here = value of the first column called group -> I show them on the X axis
       var groups = d3.map(data, function(d){return(d.group)}).keys()
-
       // Add X axis
       var x = d3.scaleBand()
           .domain(groups)
           .range([0, width])
           .padding([0.2])
-      // svg.append("g")
-      //   .attr("transform", "translate(0," + height + ")")
-      //   .call(d3.axisBottom(x).tickSize(0));
-
+  
       // Add Y axis
       var y = d3.scaleLinear()
         .domain([0, 20])
@@ -95,6 +81,7 @@ class Graph extends Component {
         .style("text-anchor", "end")
         .attr("dx", "-.8em")
         .attr("dy", ".15em")
+        .attr("font-size", "1.25em")
         .attr("transform", "rotate(-45)");
 
       // Show the bars
@@ -115,8 +102,8 @@ class Graph extends Component {
           .attr("fill", function(d) { return color(d.key); });
         svg.append("circle").attr("cx",580).attr("cy",30).attr("r", 6).style("fill", "#69b3a2")
         svg.append("circle").attr("cx",580).attr("cy",60).attr("r", 6).style("fill", "#404080")
-        svg.append("text").attr("x", 600).attr("y", 30).text("Ingresa").style("font-size", "15px").attr("alignment-baseline","middle")
-        svg.append("text").attr("x", 600).attr("y", 60).text("No ingresa").style("font-size", "15px").attr("alignment-baseline","middle")
+        svg.append("text").attr("x", 600).attr("y", 30).text("Ingresa").style("font-size", "18px").attr("alignment-baseline","middle")
+        svg.append("text").attr("x", 600).attr("y", 60).text("No ingresa").style("font-size", "18px").attr("alignment-baseline","middle")
   }
   
   drawHistogramChart() {
@@ -127,16 +114,11 @@ class Graph extends Component {
 // append the svg object to the body of the page
     var svg = d3.select("#canvas")
       .append("svg")
-        // .attr("width", "100%")
-        // .attr("height", "100%")
         .attr('viewBox','0 0 '+ 800 +' '+ 500)
-        // .attr('preserveAspectRatio','xMinYMin')
-      .append("g")
-      // .attr("transform", "translate(" + Math.min(width,height) / 2 + "," + Math.min(width,height) / 2 + ")");
+        .append("g")
         .attr("transform",
               "translate(" + margin.left + "," + margin.top + ")");
-        // .attr("transform",
-        //       "translate(" + 20 + "," + 200 + ")");
+
     var data = this.props.data
 
     // X axis: scale and draw:
@@ -151,6 +133,7 @@ class Graph extends Component {
         .style("text-anchor", "end")
         .attr("dx", "-.8em")
         .attr("dy", ".15em")
+        .attr("font-size", "1.25em")
         .attr("transform", "rotate(-45)");
   
     // set the parameters for the histogram
@@ -206,8 +189,8 @@ class Graph extends Component {
     // Handmade legend
     svg.append("circle").attr("cx",580).attr("cy",30).attr("r", 6).style("fill", "#69b3a2")
     svg.append("circle").attr("cx",580).attr("cy",60).attr("r", 6).style("fill", "#404080")
-    svg.append("text").attr("x", 600).attr("y", 30).text("Ingresa").style("font-size", "15px").attr("alignment-baseline","middle")
-    svg.append("text").attr("x", 600).attr("y", 60).text("No ingresa").style("font-size", "15px").attr("alignment-baseline","middle")
+    svg.append("text").attr("x", 600).attr("y", 30).text("Ingresa").style("font-size", "18px").attr("alignment-baseline","middle")
+    svg.append("text").attr("x", 600).attr("y", 60).text("No ingresa").style("font-size", "18px").attr("alignment-baseline","middle")
   }
   render() { return <div id="canvas" ref="canvas"></div> }
 }
