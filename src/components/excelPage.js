@@ -462,7 +462,7 @@ export default class ExcelPage extends Component {
       "54": "Petorca",
       "55": "Quillota",
       "56": "San Antonio",
-      "57": "San Felipe de Aconcagua",
+      "57": "San Felipe",
       "58": "Marga Marga",
       "61": "Cachapoal",
       "62": "Cardenal Caro",
@@ -504,9 +504,10 @@ export default class ExcelPage extends Component {
       "163": "Punilla"
     },
     "cod_depe2": {
+      "1": "Municipal",
       "2": "Subvencionado",
       "3": "Pagado",
-      "4": "Corporación"
+      "4": "Admin. Delegada"
     },
     "rural_rbd": {
       "0": "Urbano",

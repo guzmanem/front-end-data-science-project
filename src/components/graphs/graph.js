@@ -47,7 +47,7 @@ class Graph extends Component {
   
       // Add Y axis
       var y = d3.scaleLinear()
-        .domain([0, 20])
+        .domain([0, data.length > 20 ? 800/(data.length) : (data.length > 10 ?  400/(data.length) : 200/(data.length) ) ])
         .range([ height, 0 ]);
       svg.append("g")
         .call(d3.axisLeft(y));
@@ -123,7 +123,7 @@ class Graph extends Component {
 
     // X axis: scale and draw:
     var x = d3.scaleLinear()
-        .domain([d3.min(data, function(d) { return +d.value }) - 5 ,d3.max(data, function(d) { return +d.value })+ 5 ])     // can use this instead of 1000 to have the max of data: d3.max(data, function(d) { return +d.price })
+        .domain([d3.min(data, function(d) { return +d.value })*0.85,d3.max(data, function(d) { return +d.value })*1.15])     // can use this instead of 1000 to have the max of data: d3.max(data, function(d) { return +d.price })
         .range([0, width]);
     svg.append("g")
         .attr("transform", "translate(0," + height + ")")
@@ -149,7 +149,7 @@ class Graph extends Component {
     // Y axis: scale and draw:
     var y = d3.scaleLinear()
         .range([height, 0]);
-        y.domain([0, d3.max(bins1, function(d) { return d.length; })]);   // d3.hist has to be called before the Y axis obviously
+        y.domain([0, d3.max(bins1, function(d) { return d.length + 20; })]);   // d3.hist has to be called before the Y axis obviously
     svg.append("g")
         .call(d3.axisLeft(y));
   
